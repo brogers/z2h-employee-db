@@ -40,8 +40,9 @@ obj/%.o : src/%.c
 
 run: ## Run example
 run: clean $(INIT) $(TARGET)
-	./$(TARGET) -f ./mynewdb.db -n 
-	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
+	@echo -e "\nRunning $(TARGET)\n"
+	./$(TARGET) -f mynewdb.db -n
+	./$(TARGET) -f mynewdb.db
 
 profile: ## Run with profiling tools
 profile: $(OBJ)
