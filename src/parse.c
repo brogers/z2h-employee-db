@@ -4,22 +4,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 
-#include "common.h"
-#include "parse.h"
+#include <common.h>
+#include <parse.h>
 
-void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
-  (void)dbhdr;
-  (void)employees;
+int list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+  if (NULL == dbhdr) return STATUS_ERROR;
+
   int i = 0;
   for (; i < dbhdr->count; i++) {
     struct employee_t employee = employees[i];
     printf("Employee %d\n\tName: %s\n\tAddress: %s\n\tHours: %d\n", i,
            employee.name, employee.address, employee.hours);
   }
-  return;
+  return STATUS_SUCCESS;
 }
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees,
@@ -40,18 +39,23 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees,
   if (NULL == hours) return STATUS_ERROR;
 
   struct employee_t *e = *employees;
-  e = realloc(e, sizeof(struct employee_t) * dbhdr->count + 1);
+  e = realloc(e, sizeof(struct employee_t) * (dbhdr->count + 1));
   if (e == NULL) {
     return STATUS_ERROR;
   }
 
+  int current = dbhdr->count;
   dbhdr->count++;
 
-  strncpy(e[dbhdr->count - 1].name, name, sizeof(e[dbhdr->count - 1].name) - 1);
-  strncpy(e[dbhdr->count - 1].address, addr,
-          sizeof(e[dbhdr->count - 1].address) - 1);
+  unsigned int strsize = sizeof(e[current].name) - 1;
+  strncpy(e[current].name, name, strsize);
+  e[current].name[strsize] = '\0';
 
-  e[dbhdr->count - 1].hours = atoi(hours);
+  strsize = sizeof(e[current].address) - 1;
+  strncpy(e[current].address, addr, strsize);
+  e[current].address[strsize] = '\0';
+
+  e[current].hours = atoi(hours);
 
   *employees = e;
 
@@ -65,7 +69,7 @@ int read_employees(int fd, struct dbheader_t *dbhdr,
     return STATUS_ERROR;
   }
 
-  int count = ntohl(dbhdr->count);
+  int count = dbhdr->count;
 
   struct employee_t *employees = calloc(count, sizeof(struct employee_t));
 

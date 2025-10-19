@@ -43,7 +43,6 @@ run: clean $(INIT) $(TARGET)
 	@echo -e "\nRunning $(TARGET)\n"
 	./$(TARGET) -f mynewdb.db -n
 	./$(TARGET) -f mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
-	./$(TARGET) -f mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
 	./$(TARGET) -f mynewdb.db -la "Kenny G.,444 Walloby Way,140"
 
 profile: ## Run with profiling tools
