@@ -42,7 +42,10 @@ run: ## Run example
 run: clean $(INIT) $(TARGET)
 	@echo -e "\nRunning $(TARGET)\n"
 	./$(TARGET) -f mynewdb.db -n
-	./$(TARGET) -f mynewdb.db
+	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
+	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
+	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
+	hexyl -g2 mynewdb.db
 
 profile: ## Run with profiling tools
 profile: $(OBJ)
