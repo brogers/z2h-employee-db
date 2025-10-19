@@ -13,21 +13,47 @@
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
   (void)dbhdr;
   (void)employees;
+  int i = 0;
+  for (; i < dbhdr->count; i++) {
+    struct employee_t employee = employees[i];
+    printf("Employee %d\n\tName: %s\n\tAddress: %s\n\tHours: %d\n", i,
+           employee.name, employee.address, employee.hours);
+  }
   return;
 }
 
-int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees,
+int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees,
                  char *addstring) {
 
-  char *name = strtok(addstring, ",");
-  char *addr = strtok(NULL, ",");
-  char *hours = strtok(NULL, ",");
+  if (NULL == dbhdr) return STATUS_ERROR;
+  if (NULL == employees) return STATUS_ERROR;
+  if (NULL == *employees) return STATUS_ERROR;
+  if (NULL == addstring) return STATUS_ERROR;
 
-  strncpy(employees[dbhdr->count - 1].name, name,
-          sizeof(employees[dbhdr->count - 1].name));
-  strncpy(employees[dbhdr->count - 1].address, addr,
-          sizeof(employees[dbhdr->count - 1].address));
-  employees[dbhdr->count - 1].hours = atoi(hours);
+  char *name = strtok(addstring, ",");
+  if (NULL == name) return STATUS_ERROR;
+
+  char *addr = strtok(NULL, ",");
+  if (NULL == addr) return STATUS_ERROR;
+
+  char *hours = strtok(NULL, ",");
+  if (NULL == hours) return STATUS_ERROR;
+
+  struct employee_t *e = *employees;
+  e = realloc(e, sizeof(struct employee_t) * dbhdr->count + 1);
+  if (e == NULL) {
+    return STATUS_ERROR;
+  }
+
+  dbhdr->count++;
+
+  strncpy(e[dbhdr->count - 1].name, name, sizeof(e[dbhdr->count - 1].name) - 1);
+  strncpy(e[dbhdr->count - 1].address, addr,
+          sizeof(e[dbhdr->count - 1].address) - 1);
+
+  e[dbhdr->count - 1].hours = atoi(hours);
+
+  *employees = e;
 
   return STATUS_SUCCESS;
 }
@@ -39,7 +65,7 @@ int read_employees(int fd, struct dbheader_t *dbhdr,
     return STATUS_ERROR;
   }
 
-  int count = dbhdr->count;
+  int count = ntohl(dbhdr->count);
 
   struct employee_t *employees = calloc(count, sizeof(struct employee_t));
 

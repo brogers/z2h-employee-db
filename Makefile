@@ -42,15 +42,14 @@ run: ## Run example
 run: clean $(INIT) $(TARGET)
 	@echo -e "\nRunning $(TARGET)\n"
 	./$(TARGET) -f mynewdb.db -n
-	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
-	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
-	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
-	hexyl -g2 mynewdb.db
+	./$(TARGET) -f mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
+	./$(TARGET) -f mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
+	./$(TARGET) -f mynewdb.db -la "Kenny G.,444 Walloby Way,140"
 
 profile: ## Run with profiling tools
 profile: $(OBJ)
 	@gcc -g -o $(TARGET) $(OBJ) -Iinclude
-	valgrind -s --track-origins=yes --leak-check=full $(TARGET)
+	valgrind -s --track-origins=yes --leak-check=full $(TARGET) -f mynewdb.db -la "Kenny G.,444 Walloby Way,140"
 
 help: ## Show help message
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m\033[0m\n"} /^[$$()% 0-9a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
